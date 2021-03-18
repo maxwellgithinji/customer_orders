@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/maxwellgithinji/customer_orders/auth"
+	"github.com/maxwellgithinji/customer_orders/utils"
 )
 
 func IsAuthenticated(next http.Handler) http.Handler {
@@ -15,7 +16,9 @@ func IsAuthenticated(next http.Handler) http.Handler {
 			return
 		}
 		if _, ok := session.Values["profile"]; !ok {
-			http.Redirect(w, r, "/api/v1", http.StatusSeeOther)
+			w.WriteHeader(http.StatusUnauthorized)
+			utils.ResponseHelper(w, "401", "Unauthorized. Please log in")
+			// http.Redirect(w, r, "/api/v1", http.StatusSeeOther)
 		} else {
 			// Enable XSS protection with http only
 			session.Options.HttpOnly = true

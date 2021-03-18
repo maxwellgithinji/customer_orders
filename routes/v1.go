@@ -20,9 +20,9 @@ func apiV1(api *mux.Router) {
 	// Items
 	api1.HandleFunc("/items", itemscontroller.GetItems).Methods("GET")
 
-	// Auth
+	// Authorization/Authentication
 	api1.HandleFunc("/login", authcontroller.Login).Methods("GET")
-	api1.HandleFunc("/logout", authcontroller.Logout).Methods("GET")
+	api1.HandleFunc("/logout", authcontroller.Logout).Methods("POST")
 	api1.HandleFunc("/callback", authcontroller.Callback).Methods("GET")
 
 	/*

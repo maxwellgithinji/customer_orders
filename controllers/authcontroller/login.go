@@ -3,11 +3,23 @@ package authcontroller
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"net/http"
 
 	"github.com/maxwellgithinji/customer_orders/auth"
 )
 
+type login = struct {
+	Redirect string
+}
+
+// Login redirects a user to authorize with OpenID connect
+// @Summary Gets the redirect url for OpenID Login
+// @Description redirects a user to authorize with OpenID connect
+// @Tags  Auth
+// @Produce  json
+// @Success 200 {object} login{}
+// @Router /login [get]
 func Login(w http.ResponseWriter, r *http.Request) {
 	// Generate random state
 	b := make([]byte, 32)
@@ -36,6 +48,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var result = login{}
+	result.Redirect = authenticator.Config.AuthCodeURL(state)
+	json.NewEncoder(w).Encode(result)
+
 	// TODO: If a customer does not exist, save them in the db, otherwise skip saving
-	http.Redirect(w, r, authenticator.Config.AuthCodeURL(state), http.StatusTemporaryRedirect)
+	// http.Redirect(w, r, authenticator.Config.AuthCodeURL(state), http.StatusTemporaryRedirect)
 }

@@ -13,7 +13,7 @@ func index(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	msg := utils.MessageResponse{
-		Msg: "Welcome to customer orders, login to continue",
+		Message: "Welcome to customer orders, login to continue",
 	}
 	json.NewEncoder(w).Encode(msg)
 }
@@ -24,7 +24,7 @@ func customer(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	msg := utils.MessageResponse{
-		Msg: "Welcome customer",
+		Message: "Welcome customer",
 	}
 	json.NewEncoder(w).Encode(msg)
 }

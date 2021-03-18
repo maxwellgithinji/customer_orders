@@ -1,5 +1,10 @@
 basePath: /api/v1
 definitions:
+  authcontroller.login:
+    properties:
+      redirect:
+        type: string
+    type: object
   models.Customer:
     properties:
       code:
@@ -51,6 +56,30 @@ paths:
       summary: Get profile gets profile of currently logged in user
       tags:
       - Customers
+  /login:
+    get:
+      description: redirects a user to authorize with OpenID connect
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authcontroller.login'
+      summary: Gets the redirect url for OpenID Login
+      tags:
+      - Auth
+  /logout:
+    post:
+      description: redirects a user to log out with openID connect
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Gets the redirect url for openID connect logout
+      tags:
+      - Auth
 securityDefinitions:
   OAuth2Implicit:
     authorizationUrl: http://localhost:8080/api/v1/login

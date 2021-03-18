@@ -6,12 +6,22 @@ import (
 	"os"
 
 	"github.com/maxwellgithinji/customer_orders/auth"
+	"github.com/maxwellgithinji/customer_orders/utils"
 )
 
+// LogOut redirects a user to log out with openID connect
+// @Summary Gets the redirect url for openID connect logout
+// @Description redirects a user to log out with openID connect
+// @Tags  Auth
+// @Produce  json
+// @Success 200
+// @Router /logout [post]
 func Logout(w http.ResponseWriter, r *http.Request) {
+
 	session, err := auth.Store.Get(r, "auth-session")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 
@@ -21,7 +31,8 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	logoutUrl, err := url.Parse("https://" + openIDDomain)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 
@@ -37,7 +48,8 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 	returnTo, err := url.Parse(scheme + "://" + r.Host + "/api/v1")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 	parameters.Add("returnTo", returnTo.String())
@@ -48,7 +60,13 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	session.Options.MaxAge = -1
 	err = session.Save(r, w)
 
-	// TODO: ensure the session is invalidated after logout.
-	// TODO: if a user tries to access a resource with an invalidated route, they are redirected to homepage
-	http.Redirect(w, r, logoutUrl.String(), http.StatusTemporaryRedirect)
+	_, err = http.Get(logoutUrl.String())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
+		return
+	}
+
+	utils.ResponseHelper(w, "200", "Logout Successful")
+	// http.Redirect(w, r, logoutUrl.String(), http.StatusTemporaryRedirect)
 }

@@ -74,9 +74,54 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/login": {
+            "get": {
+                "description": "redirects a user to authorize with OpenID connect",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Gets the redirect url for OpenID Login",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/authcontroller.login"
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "description": "redirects a user to log out with openID connect",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Gets the redirect url for openID connect logout",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "authcontroller.login": {
+            "type": "object",
+            "properties": {
+                "redirect": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Customer": {
             "type": "object",
             "properties": {
