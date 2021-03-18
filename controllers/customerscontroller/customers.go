@@ -6,36 +6,35 @@ import (
 	"net/http"
 
 	"github.com/maxwellgithinji/customer_orders/auth"
+	"github.com/maxwellgithinji/customer_orders/models"
 )
 
-// Customer is a model struct that contains customer details
-type Customer = struct {
-	ID    int64
-	Name  string
-	Email string
-	Code  string
-}
-
 // GetCustomers gets all customers in the database
+// @Summary Get all customers in the database
+// @Description Get all customers in the database
+// @Tags  Customers
+// @Produce  json
+// @Success 200 {object} []models.Customer{}
+// @Router /auth/customers [get]
 func GetCustomers(w http.ResponseWriter, r *http.Request) {
-	var customers = []Customer{}
+	var customers = []models.Customer{}
 	json.NewEncoder(w).Encode(customers)
 }
 
 // Profile gets profile of currently logged in user
+// @Summary Get profile gets profile of currently logged in user
+// @Description Get profile gets profile of currently logged in user
+// @Tags  Customers
+// @Produce  json
+// @Success 200 {object} models.Customer{}
+// @Router /auth/profile [get]
 func Profile(w http.ResponseWriter, r *http.Request) {
-	// Initialize session
-	err := auth.InitSession()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	session, err := auth.Store.Get(r, "auth-session")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	var customer = Customer{}
+	var customer = models.Customer{}
 	fmt.Printf("%v", session.Values["profile"])
 	// TODO: Combine customer details and profile details to build the customer response
 	json.NewEncoder(w).Encode(customer)

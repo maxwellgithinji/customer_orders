@@ -1,0 +1,59 @@
+basePath: /api/v1
+definitions:
+  models.Customer:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+info:
+  contact:
+    email: maxwellgithinji@gmail.com
+    name: API Support
+  description: this is a service that helps customers order items
+  license:
+    name: MIT
+    url: https://github.com/maxwellgithinji/customer_orders/blob/develop/LICENSE
+  termsOfService: http://swagger.io/terms/
+  title: Client Orders
+  version: 1.0.0
+paths:
+  /auth/customers:
+    get:
+      description: Get all customers in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Customer'
+            type: array
+      summary: Get all customers in the database
+      tags:
+      - Customers
+  /auth/profile:
+    get:
+      description: Get profile gets profile of currently logged in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Customer'
+      summary: Get profile gets profile of currently logged in user
+      tags:
+      - Customers
+securityDefinitions:
+  OAuth2Implicit:
+    authorizationUrl: http://localhost:8080/api/v1/login
+    flow: implicit
+    type: oauth2
+swagger: "2.0"

@@ -2,7 +2,6 @@ package authcontroller
 
 import (
 	// "context"
-	// "fmt"
 	"log"
 	"net/http"
 
@@ -11,11 +10,6 @@ import (
 
 func Callback(w http.ResponseWriter, r *http.Request) {
 	authenticator, err := auth.NewAuthenticator()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = auth.InitSession()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -61,6 +55,9 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	session.Values["id_token"] = rawIDToken
 	session.Values["access_token"] = token.AccessToken
 	session.Values["profile"] = profile
+	session.Options.HttpOnly = true
+	session.Options.Secure = r.TLS != nil
+
 	err = session.Save(r, w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

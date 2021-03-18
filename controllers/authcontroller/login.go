@@ -9,15 +9,9 @@ import (
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	// Initialize session
-	err := auth.InitSession()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	// Generate random state
 	b := make([]byte, 32)
-	_, err = rand.Read(b)
+	_, err := rand.Read(b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
