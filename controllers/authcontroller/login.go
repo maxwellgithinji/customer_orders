@@ -6,12 +6,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/maxwellgithinji/customer_orders/auth"
+	"github.com/maxwellgithinji/customer_orders/models"
 )
-
-type login = struct {
-	Redirect string
-}
 
 // Login redirects a user to authorize with OpenID connect
 // @Summary Gets the redirect url for OpenID Login
@@ -20,7 +16,7 @@ type login = struct {
 // @Produce  json
 // @Success 200 {object} login{}
 // @Router /login [get]
-func Login(w http.ResponseWriter, r *http.Request) {
+func (*authcontroller) Login(w http.ResponseWriter, r *http.Request) {
 	// Generate random state
 	b := make([]byte, 32)
 	_, err := rand.Read(b)
@@ -29,8 +25,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	state := base64.StdEncoding.EncodeToString(b)
-
-	session, err := auth.Store.Get(r, "auth-session")
+	err = openIDAuthService.InitSession()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	session, err := openIDAuthService.NewStore().Get(r, "auth-session")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -41,14 +41,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	authenticator, err := auth.NewAuthenticator()
+	authenticator, err := openIDAuthService.Authenticate("https://maxgit.us.auth0.com/")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	var result = login{}
+	var result = models.Login{}
 	result.Redirect = authenticator.Config.AuthCodeURL(state)
 	json.NewEncoder(w).Encode(result)
 

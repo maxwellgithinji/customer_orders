@@ -1,20 +1,24 @@
 package authcontroller
 
 import (
-	// "context"
 	"log"
 	"net/http"
-
-	"github.com/maxwellgithinji/customer_orders/auth"
 )
 
-func Callback(w http.ResponseWriter, r *http.Request) {
-	authenticator, err := auth.NewAuthenticator()
+func (*authcontroller) Callback(w http.ResponseWriter, r *http.Request) {
+	err := openIDAuthService.InitSession()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	session, err := auth.Store.Get(r, "auth-session")
+
+	authenticator, err := openIDAuthService.Authenticate("https://maxgit.us.auth0.com/")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	session, err := openIDAuthService.NewStore().Get(r, "auth-session")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -44,7 +48,6 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to verify ID Token: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	// Getting now the userInfo
 	var profile map[string]interface{}
 	if err := idToken.Claims(&profile); err != nil {
@@ -66,4 +69,5 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect to profile route after successful login
 	http.Redirect(w, r, "/api/v1/auth/profile", http.StatusSeeOther)
+
 }

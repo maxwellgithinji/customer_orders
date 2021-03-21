@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/maxwellgithinji/customer_orders/auth"
 	"github.com/maxwellgithinji/customer_orders/utils"
 )
 
@@ -16,15 +15,17 @@ import (
 // @Produce  json
 // @Success 200
 // @Router /logout [post]
-func Logout(w http.ResponseWriter, r *http.Request) {
-
-	session, err := auth.Store.Get(r, "auth-session")
+func (*authcontroller) Logout(w http.ResponseWriter, r *http.Request) {
+	err := openIDAuthService.InitSession()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		utils.ResponseHelper(w, "500", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	session, err := openIDAuthService.NewStore().Get(r, "auth-session")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	clientID := os.Getenv("CLIENT_ID")
 	openIDDomain := os.Getenv("OPEN_ID_DOMAIN")
 
@@ -69,4 +70,5 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 	utils.ResponseHelper(w, "200", "Logout Successful")
 	// http.Redirect(w, r, logoutUrl.String(), http.StatusTemporaryRedirect)
+
 }

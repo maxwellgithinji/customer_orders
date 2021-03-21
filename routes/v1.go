@@ -5,7 +5,23 @@ import (
 	"github.com/maxwellgithinji/customer_orders/controllers/authcontroller"
 	"github.com/maxwellgithinji/customer_orders/controllers/customerscontroller"
 	"github.com/maxwellgithinji/customer_orders/controllers/itemscontroller"
+	"github.com/maxwellgithinji/customer_orders/databases"
 	"github.com/maxwellgithinji/customer_orders/middlewares"
+	service "github.com/maxwellgithinji/customer_orders/services"
+)
+
+var (
+
+	// Auth
+	openIDAuthService    service.OpenIdAuthService           = service.NewOpenIdAuthService()
+	openIDAuthController authcontroller.OpenIDAuthController = authcontroller.NewOpenIdAuthController(openIDAuthService)
+
+	// Middlewares
+	authmiddleware middlewares.AuthMiddleware = middlewares.NewAuthMiddleware(openIDAuthService)
+	// Customer
+	customerTable      databases.CustomerTable                = databases.NewCustomersTable()
+	customerService    service.CustomerService                = service.NewCustomerService(customerTable)
+	customerController customerscontroller.CustomerController = customerscontroller.NewCustomerController(customerService, openIDAuthService)
 )
 
 func apiV1(api *mux.Router) {
@@ -21,18 +37,18 @@ func apiV1(api *mux.Router) {
 	api1.HandleFunc("/items", itemscontroller.GetItems).Methods("GET")
 
 	// Authorization/Authentication
-	api1.HandleFunc("/login", authcontroller.Login).Methods("GET")
-	api1.HandleFunc("/logout", authcontroller.Logout).Methods("POST")
-	api1.HandleFunc("/callback", authcontroller.Callback).Methods("GET")
+	api1.HandleFunc("/callback", openIDAuthController.Callback).Methods("Get")
+	api1.HandleFunc("/login", openIDAuthController.Login).Methods("Get")
+	api1.HandleFunc("/logout", openIDAuthController.Logout).Methods("POST")
 
 	/*
 		Authenticated routes
 	*/
 	a := api1.PathPrefix("/auth").Subrouter()
-	a.Use(middlewares.IsAuthenticated)
+	a.Use(authmiddleware.IsAuthenticated)
 
 	// Customers
-	a.HandleFunc("/profile", customerscontroller.Profile).Methods("GET")
-	a.HandleFunc("/customers", customerscontroller.GetCustomers).Methods("GET")
+	a.HandleFunc("/profile", customerController.Profile).Methods("GET")
+	a.HandleFunc("/customers", customerController.GetCustomers).Methods("GET")
 
 }

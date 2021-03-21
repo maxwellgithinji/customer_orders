@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/joho/godotenv"
-	"github.com/maxwellgithinji/customer_orders/auth"
 	_ "github.com/maxwellgithinji/customer_orders/docs"
 	"github.com/maxwellgithinji/customer_orders/routes"
 )
@@ -30,11 +29,6 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
-	}
-	// Init Session
-	err = auth.InitSession()
-	if err != nil {
-		log.Fatal("Error initializing session")
 	}
 
 	// port := os.Getenv("PORT")

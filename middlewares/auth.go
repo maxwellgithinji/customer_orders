@@ -4,15 +4,37 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/maxwellgithinji/customer_orders/auth"
+	service "github.com/maxwellgithinji/customer_orders/services"
 	"github.com/maxwellgithinji/customer_orders/utils"
 )
 
-func IsAuthenticated(next http.Handler) http.Handler {
+type AuthMiddleware interface {
+	IsAuthenticated(next http.Handler) http.Handler
+}
+
+type authmiddleware struct{}
+
+var (
+	openIDAuthService service.OpenIdAuthService
+)
+
+func NewAuthMiddleware(openIdAuth service.OpenIdAuthService) AuthMiddleware {
+	openIDAuthService = openIdAuth
+	return &authmiddleware{}
+}
+
+func (*authmiddleware) IsAuthenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		session, err := auth.Store.Get(r, "auth-session")
+		err := openIDAuthService.InitSession()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusInternalServerError)
+			utils.ResponseHelper(w, "500", err.Error())
+			return
+		}
+		session, err := openIDAuthService.NewStore().Get(r, "auth-session")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			utils.ResponseHelper(w, "500", err.Error())
 			return
 		}
 		if _, ok := session.Values["profile"]; !ok {
