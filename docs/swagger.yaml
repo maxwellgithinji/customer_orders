@@ -1,10 +1,5 @@
 basePath: /api/v1
 definitions:
-  authcontroller.login:
-    properties:
-      redirect:
-        type: string
-    type: object
   models.Customer:
     properties:
       code:
@@ -14,6 +9,11 @@ definitions:
       id:
         type: integer
       name:
+        type: string
+    type: object
+  models.Login:
+    properties:
+      redirect:
         type: string
     type: object
 info:
@@ -65,7 +65,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/authcontroller.login'
+            $ref: '#/definitions/models.Login'
       summary: Gets the redirect url for OpenID Login
       tags:
       - Auth

@@ -89,7 +89,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/authcontroller.login"
+                            "$ref": "#/definitions/models.Login"
                         }
                     }
                 }
@@ -114,14 +114,6 @@ var doc = `{
         }
     },
     "definitions": {
-        "authcontroller.login": {
-            "type": "object",
-            "properties": {
-                "redirect": {
-                    "type": "string"
-                }
-            }
-        },
         "models.Customer": {
             "type": "object",
             "properties": {
@@ -135,6 +127,14 @@ var doc = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Login": {
+            "type": "object",
+            "properties": {
+                "redirect": {
                     "type": "string"
                 }
             }

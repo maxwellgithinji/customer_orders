@@ -14,7 +14,7 @@ import (
 // @Description redirects a user to authorize with OpenID connect
 // @Tags  Auth
 // @Produce  json
-// @Success 200 {object} login{}
+// @Success 200 {object} models.Login{}
 // @Router /login [get]
 func (*authcontroller) Login(w http.ResponseWriter, r *http.Request) {
 	// Generate random state

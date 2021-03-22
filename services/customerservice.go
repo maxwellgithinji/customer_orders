@@ -12,6 +12,7 @@ type CustomerService interface {
 	CreateCustomer(Customer *models.Customer) (*models.Customer, error)
 	FindAllCustomers() ([]models.Customer, error)
 	FindOneCustomer(ID int64) (*models.Customer, error)
+	FindACustomerByEmail(Email string) (*models.Customer, error)
 }
 
 type customerservice struct{}
@@ -30,10 +31,11 @@ func (*customerservice) ValidateCustomer(Customer *models.Customer) error {
 		err := errors.New("Customers are empty")
 		return err
 	}
-	if Customer.Name == "" {
-		err := errors.New("Customers name is empty")
+	if Customer.Email == "" {
+		err := errors.New("Customers email is empty")
 		return err
 	}
+	// TODO: Validate email
 	return nil
 }
 func (*customerservice) CreateCustomer(Customer *models.Customer) (*models.Customer, error) {
@@ -45,4 +47,8 @@ func (*customerservice) FindAllCustomers() ([]models.Customer, error) {
 
 func (*customerservice) FindOneCustomer(ID int64) (*models.Customer, error) {
 	return CustomerTable.FindOneCustomer(ID)
+}
+
+func (*customerservice) FindACustomerByEmail(Email string) (*models.Customer, error) {
+	return CustomerTable.FindCustomerByEmail(Email)
 }

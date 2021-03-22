@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/joho/godotenv"
 	_ "github.com/maxwellgithinji/customer_orders/docs"
@@ -32,7 +33,8 @@ func main() {
 	}
 
 	// port := os.Getenv("PORT")
+	port := os.Getenv("PORT")
 	http.Handle("/", routes.RouteHandlers())
-	log.Printf("listening on http://%s/", "127.0.0.1:8080")
-	log.Fatal(http.ListenAndServe("127.0.0.1:8080", nil))
+	log.Println("Running on port...", port)
+	log.Fatalln(http.ListenAndServe(":"+port, nil))
 }
