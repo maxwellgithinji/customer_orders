@@ -3,7 +3,9 @@ package customerscontroller
 import (
 	"net/http"
 
-	service "github.com/maxwellgithinji/customer_orders/services"
+	"github.com/maxwellgithinji/customer_orders/databases"
+	"github.com/maxwellgithinji/customer_orders/services/customerservice"
+	"github.com/maxwellgithinji/customer_orders/services/openidauthservice"
 )
 
 type CustomerController interface {
@@ -14,11 +16,12 @@ type CustomerController interface {
 type customercontroller struct{}
 
 var (
-	customerService   service.CustomerService
-	openIDAuthService service.OpenIdAuthService
+	CustomerTable     databases.CustomerTable             = databases.NewCustomersTable(databases.DB)
+	customerService   customerservice.CustomerService     = customerservice.NewCustomerService(CustomerTable)
+	openIDAuthService openidauthservice.OpenIdAuthService = openidauthservice.NewOpenIdAuthService()
 )
 
-func NewCustomerController(service service.CustomerService, openIdAuth service.OpenIdAuthService) CustomerController {
+func NewCustomerController(service customerservice.CustomerService, openIdAuth openidauthservice.OpenIdAuthService) CustomerController {
 	customerService = service
 	openIDAuthService = openIdAuth
 	return &customercontroller{}

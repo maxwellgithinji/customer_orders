@@ -139,13 +139,6 @@ var doc = `{
                 }
             }
         }
-    },
-    "securityDefinitions": {
-        "OAuth2Implicit": {
-            "type": "oauth2",
-            "flow": "implicit",
-            "authorizationUrl": "http://localhost:8080/api/v1/login"
-        }
     }
 }`
 

@@ -4,20 +4,13 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	service "github.com/maxwellgithinji/customer_orders/services"
-)
-
-var (
-	openIDAuthServiceLoginTest    service.OpenIdAuthService = service.NewOpenIdAuthService()
-	openIDAuthControllerLoginTest OpenIDAuthController      = NewOpenIdAuthController(openIDAuthServiceTest)
 )
 
 func TestLogin(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/login", nil)
 	rr := httptest.NewRecorder()
 
-	handler := http.HandlerFunc(openIDAuthControllerLoginTest.Login)
+	handler := http.HandlerFunc(openIDAuthControllerTest.Login)
 	handler.ServeHTTP(rr, req)
 
 	status := rr.Result().StatusCode

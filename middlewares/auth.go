@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	service "github.com/maxwellgithinji/customer_orders/services"
+	"github.com/maxwellgithinji/customer_orders/services/openidauthservice"
 	"github.com/maxwellgithinji/customer_orders/utils"
 )
 
@@ -15,10 +15,10 @@ type AuthMiddleware interface {
 type authmiddleware struct{}
 
 var (
-	openIDAuthService service.OpenIdAuthService
+	openIDAuthService openidauthservice.OpenIdAuthService
 )
 
-func NewAuthMiddleware(openIdAuth service.OpenIdAuthService) AuthMiddleware {
+func NewAuthMiddleware(openIdAuth openidauthservice.OpenIdAuthService) AuthMiddleware {
 	openIDAuthService = openIdAuth
 	return &authmiddleware{}
 }
@@ -40,7 +40,7 @@ func (*authmiddleware) IsAuthenticated(next http.Handler) http.Handler {
 		if _, ok := session.Values["profile"]; !ok {
 			w.WriteHeader(http.StatusUnauthorized)
 			utils.ResponseHelper(w, "401", "Unauthorized. Please log in")
-			// http.Redirect(w, r, "/api/v1", http.StatusSeeOther)
+			return
 		} else {
 			// Enable XSS protection with http only
 			session.Options.HttpOnly = true

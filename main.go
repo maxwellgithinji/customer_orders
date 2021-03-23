@@ -6,8 +6,13 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/maxwellgithinji/customer_orders/databases"
 	_ "github.com/maxwellgithinji/customer_orders/docs"
 	"github.com/maxwellgithinji/customer_orders/routes"
+)
+
+var (
+	database databases.Database = databases.NewDatabase()
 )
 
 // @title Client Orders
@@ -22,9 +27,6 @@ import (
 // @license.url https://github.com/maxwellgithinji/customer_orders/blob/develop/LICENSE
 //
 // @BasePath /api/v1
-
-// @securitydefinitions.oauth2.implicit OAuth2Implicit
-// @authorizationurl http://localhost:8080/api/v1/login
 func main() {
 	// Initialize dotenv
 	err := godotenv.Load()
@@ -32,6 +34,11 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
+	// Initialize db connection
+	_, err = database.InitializeDbConnection()
+	if err != nil {
+		log.Fatal("Error connecting to db", err)
+	}
 	// port := os.Getenv("PORT")
 	port := os.Getenv("PORT")
 	http.Handle("/", routes.RouteHandlers())

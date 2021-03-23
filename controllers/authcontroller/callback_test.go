@@ -4,13 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	service "github.com/maxwellgithinji/customer_orders/services"
-)
-
-var (
-	openIDAuthServiceTest    service.OpenIdAuthService = service.NewOpenIdAuthService()
-	openIDAuthControllerTest OpenIDAuthController      = NewOpenIdAuthController(openIDAuthServiceTest)
 )
 
 func TestCallback(t *testing.T) {
