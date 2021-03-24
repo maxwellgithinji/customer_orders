@@ -37,7 +37,7 @@ func (*authmiddleware) IsAuthenticated(next http.Handler) http.Handler {
 		session, err := openIDAuthService.NewStore().Get(r, "auth-session")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			utils.ResponseHelper(w, "500", err.Error())
+			utils.ResponseHelper(w, "500", err.Error()+",  delete the session cookie")
 			return
 		}
 		if _, ok := session.Values["profile"]; !ok {
@@ -68,7 +68,7 @@ func (*authmiddleware) IsCurrentUser(next http.Handler) http.Handler {
 		session, err := openIDAuthService.NewStore().Get(r, "auth-session")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			utils.ResponseHelper(w, "500", err.Error())
+			utils.ResponseHelper(w, "500", err.Error()+",  delete the session cookie")
 			return
 		}
 		sessionemail := fmt.Sprintf("%v", session.Values["profile"].(map[string]interface{})["email"])
