@@ -10,7 +10,7 @@ import (
 )
 
 type CustomerTable interface {
-	SaveCustomer(customer models.Customer) (models.Customer, error)
+	SaveCustomer(customer models.Customer) (*models.Customer, error)
 	FindAllCustomers() ([]models.Customer, error)
 	FindOneCustomer(ID int64) (*models.Customer, error)
 	FindCustomerByEmail(Email string) (models.Customer, error)
@@ -74,12 +74,12 @@ func (*customertable) FindOneCustomer(ID int64) (*models.Customer, error) {
 	return nil, nil
 }
 
-func (*customertable) SaveCustomer(customer models.Customer) (models.Customer, error) {
+func (*customertable) SaveCustomer(customer models.Customer) (*models.Customer, error) {
 	conn, err := DB.InitializeDbConnection()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error connecting to db: %v\n", err)
 
-		return customer, err
+		return nil, err
 	}
 	defer conn.Close()
 	defer fmt.Printf("Db connection closed")
@@ -114,13 +114,12 @@ func (*customertable) SaveCustomer(customer models.Customer) (models.Customer, e
 	)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error saving customer in the db: %v\n", err)
-
-		return customer, err
+		return nil, err
 	}
 	fmt.Printf("Inserted a single record %v\n", id)
 	newcustomer := customer
 	newcustomer.ID = id
-	return newcustomer, nil
+	return &newcustomer, nil
 }
 
 func (*customertable) FindCustomerByEmail(Email string) (models.Customer, error) {

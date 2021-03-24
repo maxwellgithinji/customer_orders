@@ -21,8 +21,8 @@ var (
 	customerService   customerservice.CustomerService     = customerservice.NewCustomerService(customerTable)
 )
 
-func NewOpenIdAuthController(service openidauthservice.OpenIdAuthService, customer databases.CustomerTable) OpenIDAuthController {
+func NewOpenIdAuthController(service openidauthservice.OpenIdAuthService, customer customerservice.CustomerService) OpenIDAuthController {
 	openIDAuthService = service
-	customerTable = customer
+	customerService = customer
 	return &authcontroller{}
 }

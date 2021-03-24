@@ -21,7 +21,7 @@ var (
 
 	// Auth
 	openIDAuthService    openidauthservice.OpenIdAuthService = openidauthservice.NewOpenIdAuthService()
-	openIDAuthController authcontroller.OpenIDAuthController = authcontroller.NewOpenIdAuthController(openIDAuthService, customerTable)
+	openIDAuthController authcontroller.OpenIDAuthController = authcontroller.NewOpenIdAuthController(openIDAuthService, customerService)
 
 	// Customer
 	customerTable      databases.CustomerTable                = databases.NewCustomersTable(database)

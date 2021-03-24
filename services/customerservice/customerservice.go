@@ -9,7 +9,7 @@ import (
 
 type CustomerService interface {
 	ValidateCustomer(Customer *models.Customer) error
-	CreateCustomer(Customer models.Customer) (models.Customer, error)
+	CreateCustomer(Customer models.Customer) (*models.Customer, error)
 	FindAllCustomers() ([]models.Customer, error)
 	FindOneCustomer(ID int64) (*models.Customer, error)
 	FindACustomerByEmail(Email string) (models.Customer, error)
@@ -38,7 +38,7 @@ func (*customerservice) ValidateCustomer(Customer *models.Customer) error {
 	// TODO: Validate email
 	return nil
 }
-func (*customerservice) CreateCustomer(Customer models.Customer) (models.Customer, error) {
+func (*customerservice) CreateCustomer(Customer models.Customer) (*models.Customer, error) {
 	return CustomerTable.SaveCustomer(Customer)
 }
 func (*customerservice) FindAllCustomers() ([]models.Customer, error) {

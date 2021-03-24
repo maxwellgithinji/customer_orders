@@ -1,12 +1,12 @@
 package authcontroller
 
 import (
-	"github.com/maxwellgithinji/customer_orders/databases"
+	"github.com/maxwellgithinji/customer_orders/services/customerservice"
 	"github.com/maxwellgithinji/customer_orders/services/openidauthservice"
 )
 
 var (
-	customerTableTest        databases.CustomerTable
+	customerServiceTest      customerservice.CustomerService
 	openIDAuthServiceTest    openidauthservice.OpenIdAuthService = openidauthservice.NewOpenIdAuthService()
-	openIDAuthControllerTest OpenIDAuthController                = NewOpenIdAuthController(openIDAuthServiceTest, customerTableTest)
+	openIDAuthControllerTest OpenIDAuthController                = NewOpenIdAuthController(openIDAuthServiceTest, customerServiceTest)
 )

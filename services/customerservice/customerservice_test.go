@@ -2,6 +2,7 @@ package customerservice
 
 import (
 	"testing"
+	"time"
 
 	"github.com/maxwellgithinji/customer_orders/models"
 	"github.com/stretchr/testify/assert"
@@ -13,10 +14,10 @@ type MockDatabase struct {
 	mock.Mock
 }
 
-func (mock *MockDatabase) SaveCustomer(Customer models.Customer) (models.Customer, error) {
+func (mock *MockDatabase) SaveCustomer(Customer models.Customer) (*models.Customer, error) {
 	args := mock.Called()
 	res := args.Get(0)
-	return res.(models.Customer), args.Error(1)
+	return res.(*models.Customer), args.Error(1)
 }
 func (mock *MockDatabase) FindAllCustomers() ([]models.Customer, error) {
 	args := mock.Called()
@@ -84,7 +85,7 @@ func TestFindAllCustomers(t *testing.T) {
 
 func TestCreateACustomer(t *testing.T) {
 	mockDb := new(MockDatabase)
-	customer := models.Customer{ID: 1, Username: "maxgit", Email: "maxwellgithinji@gmail.com", Code: "123a", PhoneNumber: "0711111111"}
+	customer := models.Customer{ID: 1, Username: "maxgit", Email: "maxwellgithinji@gmail.com", Code: "123a", PhoneNumber: "0711111111", CreatedAt: time.Now().Local()}
 
 	// Setup expectations
 	mockDb.On("SaveCustomer").Return(&customer, nil)
