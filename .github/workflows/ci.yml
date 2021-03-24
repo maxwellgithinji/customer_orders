@@ -57,7 +57,9 @@ jobs:
       - run: make testcover
       - run: |
           echo "CODECLIMATE_REPO_TOKEN=521b528b1f9ee802f966d62a3cb5cf7a5bfbb3366b0cadfd2b6aaa1052bbd021" >> $GITHUB_ENV
+      - run: |
           echo "CODECLIMATE_API_HOST=https://codebeat.co/webhooks/code_coverage \" >> $GITHUB_ENV
+      - run: |
           echo "CC_TEST_REPORTER_ID=521b528b1f9ee802f966d62a3cb5cf7a5bfbb3366b0cadfd2b6aaa1052bbd021" >> $GITHUB_ENV
       - run: codeclimate-test-reporter < cover.out
   
