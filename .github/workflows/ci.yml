@@ -10,7 +10,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    env: DATABASE_URL=postgresql://root:secret@localhost:5432/customer_service_test?sslmode=disable
+    env: DATABASE_URL : postgresql://root:secret@localhost:5432/customer_service_test?sslmode=disable
     services:
       postgres:
         image: postgres:12
