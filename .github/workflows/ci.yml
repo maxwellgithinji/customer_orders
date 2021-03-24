@@ -45,7 +45,7 @@ jobs:
         env:
           DATABASE_URL: "postgresql://root:secret@localhost:5432/customer_service_test?sslmode=disable"
       - name: Run migrations
-        run: migrate -path ./databases/migrations/ -database "${DATABASE_URL}" -verbose up
+        run: migrate -path ./databases/migrations/ -database "postgresql://root:secret@localhost:5432/customer_service_test?sslmode=disable" -verbose up
 
       - name: Test
         run: make test
