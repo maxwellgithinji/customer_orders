@@ -12,9 +12,12 @@ import (
 	"github.com/maxwellgithinji/customer_orders/services/itemservice"
 	"github.com/maxwellgithinji/customer_orders/services/openidauthservice"
 	"github.com/maxwellgithinji/customer_orders/services/orderservice"
+	"github.com/maxwellgithinji/customer_orders/utils/sms"
 )
 
 var (
+	// SMS
+	message sms.SMS = sms.NewSMS()
 
 	// Database
 	database databases.Database = databases.NewDatabase()
@@ -39,7 +42,7 @@ var (
 	// Orders
 	OrderTable      databases.OrderTable             = databases.NewOrdersTable(databases.DB)
 	OrderService    orderservice.OrderService        = orderservice.NewOrderService(OrderTable)
-	OrderController orderscontroller.OrderController = orderscontroller.NewOrderController(OrderService, customerService, Itemservice, openIDAuthService)
+	OrderController orderscontroller.OrderController = orderscontroller.NewOrderController(OrderService, customerService, Itemservice, openIDAuthService, message)
 )
 
 func apiV1(api *mux.Router) {

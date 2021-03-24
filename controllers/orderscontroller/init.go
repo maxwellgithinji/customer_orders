@@ -8,6 +8,7 @@ import (
 	"github.com/maxwellgithinji/customer_orders/services/itemservice"
 	"github.com/maxwellgithinji/customer_orders/services/openidauthservice"
 	"github.com/maxwellgithinji/customer_orders/services/orderservice"
+	"github.com/maxwellgithinji/customer_orders/utils/sms"
 )
 
 type OrderController interface {
@@ -29,16 +30,21 @@ var (
 	CustomerService   customerservice.CustomerService     = customerservice.NewCustomerService(CustomerTable)
 	ItemService       itemservice.ItemService             = itemservice.NewItemService(ItemTable)
 	OpenIDAuthService openidauthservice.OpenIdAuthService = openidauthservice.NewOpenIdAuthService()
+
+	// SMS
+	SMS sms.SMS = sms.NewSMS()
 )
 
 func NewOrderController(
 	order orderservice.OrderService,
 	customer customerservice.CustomerService,
 	item itemservice.ItemService,
-	openid openidauthservice.OpenIdAuthService) OrderController {
+	openid openidauthservice.OpenIdAuthService,
+	massage sms.SMS) OrderController {
 	OrderService = order
 	CustomerService = customer
 	ItemService = item
 	OpenIDAuthService = openid
+	SMS = massage
 	return &ordercontroller{}
 }

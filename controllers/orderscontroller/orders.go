@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/maxwellgithinji/customer_orders/models"
@@ -89,6 +90,22 @@ func (*ordercontroller) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if customer.Status != "active" {
+		if err == nil {
+			w.WriteHeader(http.StatusBadRequest)
+			utils.ResponseHelper(w, "400", "Please complete the onboarding process to make an order")
+			return
+		}
+	}
+
+	if customer.PhoneNumber == "" {
+		if err == nil {
+			w.WriteHeader(http.StatusBadRequest)
+			utils.ResponseHelper(w, "400", "A phone number is required to make an order")
+			return
+		}
+	}
+
 	item, err := ItemService.FindOneItem(orderbody.ItemID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -113,8 +130,31 @@ func (*ordercontroller) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Save the SMS sending logic here
-	utils.ResponseWithDataHelper(w, "200", "order details updated successfully", order)
+	messsage := "Hi " + customer.Username + "\n Your order for " + item.Item + " was completed successfully \n Please pick your item within the next 5 working days"
+
+	// Use wait groups to wait for the sms sending to finish
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		// Send message
+		status, err := SMS.SendMessage(customer.PhoneNumber, messsage)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			utils.ResponseHelper(w, "500", err.Error())
+			return
+		}
+		if status != "201 Created" {
+			w.WriteHeader(http.StatusCreated)
+			utils.ResponseWithDataHelper(w, "201", "order created successfully but there was an error sending message", order)
+			return
+		} else {
+			w.WriteHeader(http.StatusCreated)
+			utils.ResponseWithDataHelper(w, "201", "order created successfully and sms sent to "+customer.PhoneNumber, order)
+		}
+	}()
+	wg.Wait()
 }
 
 // FindCurrentUserOrders gets orders of currently logged in user
