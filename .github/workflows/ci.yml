@@ -49,6 +49,12 @@ jobs:
 
       - name: Test
         run: make test
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: npm install
+      - run: npm test
+      - uses: paambaati/codeclimate-action@v2.2.4
         env:
           CC_TEST_REPORTER_ID: 521b528b1f9ee802f966d62a3cb5cf7a5bfbb3366b0cadfd2b6aaa1052bbd021
         with:
