@@ -3,10 +3,10 @@ package authcontroller
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/json"
 	"net/http"
 
 	"github.com/maxwellgithinji/customer_orders/models"
+	"github.com/maxwellgithinji/customer_orders/utils"
 )
 
 // Login redirects a user to authorize with OpenID connect
@@ -21,13 +21,15 @@ func (*authcontroller) Login(w http.ResponseWriter, r *http.Request) {
 	b := make([]byte, 32)
 	_, err := rand.Read(b)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 	state := base64.StdEncoding.EncodeToString(b)
 	err = openIDAuthService.InitSession()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 	session, err := openIDAuthService.NewStore().Get(r, "auth-session")
@@ -38,18 +40,18 @@ func (*authcontroller) Login(w http.ResponseWriter, r *http.Request) {
 	session.Values["state"] = state
 	err = session.Save(r, w)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 	authenticator, err := openIDAuthService.Authenticate("https://maxgit.us.auth0.com/")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 	var result = models.Login{}
 	result.Redirect = authenticator.Config.AuthCodeURL(state)
-	json.NewEncoder(w).Encode(result)
-
-	// TODO: If a customer does not exist, save them in the db, otherwise skip saving
+	utils.ResponseWithDataHelper(w, "200", "Go to the redirect path below to log in", result)
 	// http.Redirect(w, r, authenticator.Config.AuthCodeURL(state), http.StatusTemporaryRedirect)
 }
