@@ -6,29 +6,34 @@ import (
 	"net/http"
 
 	"github.com/maxwellgithinji/customer_orders/models"
+	"github.com/maxwellgithinji/customer_orders/utils"
 )
 
 func (*authcontroller) Callback(w http.ResponseWriter, r *http.Request) {
 	err := openIDAuthService.InitSession()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 
 	authenticator, err := openIDAuthService.Authenticate("https://maxgit.us.auth0.com/")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 
 	session, err := openIDAuthService.NewStore().Get(r, "auth-session")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 
 	if r.URL.Query().Get("state") != session.Values["state"] {
-		http.Error(w, "Invalid state parameter", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		utils.ResponseHelper(w, "400", "Invalid state parameter")
 		return
 	}
 
@@ -36,26 +41,30 @@ func (*authcontroller) Callback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("no token found: %v", err)
 		w.WriteHeader(http.StatusUnauthorized)
+		utils.ResponseHelper(w, "401", "no token found: "+err.Error())
 		return
 	}
 
 	rawIDToken, ok := token.Extra("id_token").(string)
 	if !ok {
-		http.Error(w, "No id_token field in oauth2 token.", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", "No id_token field in oauth2 token.")
 		return
 	}
 
 	idToken, err := authenticator.Provider.Verifier(authenticator.OidcConfig).Verify(authenticator.Ctx, rawIDToken)
 
 	if err != nil {
-		http.Error(w, "Failed to verify ID Token: "+err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", "Failed to verify ID Token: "+err.Error())
 		return
 	}
 
 	// Getting now the userInfo
 	var profile map[string]interface{}
 	if err := idToken.Claims(&profile); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 
@@ -67,7 +76,8 @@ func (*authcontroller) Callback(w http.ResponseWriter, r *http.Request) {
 
 	err = session.Save(r, w)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 
@@ -92,13 +102,15 @@ func (*authcontroller) Callback(w http.ResponseWriter, r *http.Request) {
 			// Save as new user
 			_, err = customerService.CreateCustomer(customer)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				w.WriteHeader(http.StatusInternalServerError)
+				utils.ResponseHelper(w, "500", err.Error())
 				return
 			}
 		}
 	}
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 
