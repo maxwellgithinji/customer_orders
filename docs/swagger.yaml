@@ -17,6 +17,24 @@ definitions:
       username:
         type: string
     type: object
+  models.Item:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      item:
+        type: string
+      price:
+        type: integer
+    type: object
+  models.ItemPost:
+    properties:
+      item:
+        type: string
+      price:
+        type: integer
+    type: object
   models.Login:
     properties:
       redirect:
@@ -56,6 +74,47 @@ paths:
       summary: Get all customers in the database
       tags:
       - Customers
+  /auth/delete/item/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: deletes an item
+      parameters:
+      - description: Item Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: enables a user to delete an item
+      tags:
+      - Items
+  /auth/item:
+    post:
+      consumes:
+      - application/json
+      description: Get profile creates a new item
+      parameters:
+      - description: Item
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.ItemPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemPost'
+      summary: Get profile creates a new item
+      tags:
+      - Items
   /auth/onboard:
     patch:
       consumes:
@@ -91,6 +150,21 @@ paths:
       summary: Get profile gets profile of currently logged in user
       tags:
       - Customers
+  /items:
+    get:
+      description: Get all items in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Item'
+            type: array
+      summary: Get all items in the database
+      tags:
+      - Items
   /login:
     get:
       description: redirects a user to authorize with OpenID connect

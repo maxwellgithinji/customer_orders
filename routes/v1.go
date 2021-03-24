@@ -8,6 +8,7 @@ import (
 	"github.com/maxwellgithinji/customer_orders/databases"
 	"github.com/maxwellgithinji/customer_orders/middlewares"
 	"github.com/maxwellgithinji/customer_orders/services/customerservice"
+	"github.com/maxwellgithinji/customer_orders/services/itemservice"
 	"github.com/maxwellgithinji/customer_orders/services/openidauthservice"
 )
 
@@ -27,6 +28,11 @@ var (
 	customerTable      databases.CustomerTable                = databases.NewCustomersTable(database)
 	customerService    customerservice.CustomerService        = customerservice.NewCustomerService(customerTable)
 	customerController customerscontroller.CustomerController = customerscontroller.NewCustomerController(customerService, openIDAuthService)
+
+	// Items
+	itemTable      databases.ItemTable            = databases.NewItemsTable(database)
+	Itemservice    itemservice.ItemService        = itemservice.NewItemService(itemTable)
+	itemcontroller itemscontroller.ItemController = itemscontroller.NewItemController(Itemservice)
 )
 
 func apiV1(api *mux.Router) {
@@ -39,7 +45,7 @@ func apiV1(api *mux.Router) {
 	api1.HandleFunc("/", index).Methods("GET")
 
 	// Items
-	api1.HandleFunc("/items", itemscontroller.GetItems).Methods("GET")
+	api1.HandleFunc("/items", itemcontroller.GetItems).Methods("GET")
 
 	// Authorization/Authentication
 	api1.HandleFunc("/callback", openIDAuthController.Callback).Methods("Get")
@@ -55,6 +61,9 @@ func apiV1(api *mux.Router) {
 	// Customers
 	a.HandleFunc("/profile", customerController.Profile).Methods("GET")
 	a.HandleFunc("/customers", customerController.GetCustomers).Methods("GET")
-	a.HandleFunc("/onboard/", customerController.OnboardCustomer).Methods("PATCH")
+	a.HandleFunc("/onboard", customerController.OnboardCustomer).Methods("PATCH")
 
+	// Items
+	a.HandleFunc("/item", itemcontroller.CreateItem).Methods("POST")
+	a.HandleFunc("/delete/item/{id}", itemscontroller.DeleteItem).Methods("DELETE")
 }

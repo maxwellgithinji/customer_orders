@@ -45,8 +45,9 @@ func (*authmiddleware) IsAuthenticated(next http.Handler) http.Handler {
 			// Enable XSS protection with http only
 			session.Options.HttpOnly = true
 			session.Options.Secure = r.TLS != nil
-			err = session.Save(r, w)
-			next.ServeHTTP(w, r.WithContext(context.Background()))
+			_ = session.Save(r, w)
+			ctx := context.WithValue(r.Context(), "auth-session", session)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		}
 	})
 }
