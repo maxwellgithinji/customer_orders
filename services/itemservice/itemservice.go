@@ -12,6 +12,7 @@ type ItemService interface {
 	CreateItem(Item models.Item) (*models.Item, error)
 	FindAllItems() ([]models.Item, error)
 	DeleteItem(ID int64) (int64, error)
+	FindOneItem(ID int64) (*models.Item, error)
 }
 
 type itemservice struct{}
@@ -50,4 +51,8 @@ func (*itemservice) FindAllItems() ([]models.Item, error) {
 
 func (*itemservice) DeleteItem(ID int64) (int64, error) {
 	return ItemTable.DeleteItem(ID)
+}
+
+func (*itemservice) FindOneItem(ID int64) (*models.Item, error) {
+	return ItemTable.FindOneItem(ID)
 }

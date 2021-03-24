@@ -32,6 +32,32 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/currentuser/orders": {
+            "get": {
+                "description": "gets orders of currently logged in user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "enables the current user to get their orders",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Order"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/auth/customers": {
             "get": {
                 "description": "Get all customers in the database",
@@ -86,7 +112,7 @@ var doc = `{
         },
         "/auth/item": {
             "post": {
-                "description": "Get profile creates a new item",
+                "description": "creates a new item",
                 "consumes": [
                     "application/json"
                 ],
@@ -96,7 +122,7 @@ var doc = `{
                 "tags": [
                     "Items"
                 ],
-                "summary": "Get profile creates a new item",
+                "summary": "creates a new item",
                 "parameters": [
                     {
                         "description": "Item",
@@ -147,6 +173,61 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Onboarding"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/orders": {
+            "get": {
+                "description": "Get all orders in the database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get all orders in the database",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Order"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "creates a new order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "creates a new order",
+                "parameters": [
+                    {
+                        "description": "Order",
+                        "name": "order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.OrderPost"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.OrderPost"
                         }
                     }
                 }
@@ -304,6 +385,37 @@ var doc = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Order": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "item_id": {
+                    "type": "integer"
+                },
+                "order_date": {
+                    "type": "string"
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.OrderPost": {
+            "type": "object",
+            "properties": {
+                "item_id": {
+                    "type": "integer"
                 }
             }
         }

@@ -1,6 +1,7 @@
 package databases
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 	"time"
@@ -12,6 +13,7 @@ type ItemTable interface {
 	SaveItem(item models.Item) (*models.Item, error)
 	FindAllItems() ([]models.Item, error)
 	DeleteItem(ID int64) (int64, error)
+	FindOneItem(ID int64) (*models.Item, error)
 }
 
 type itemtable struct{}
@@ -139,4 +141,43 @@ func (*itemtable) SaveItem(item models.Item) (*models.Item, error) {
 	newitem := item
 	newitem.ID = id
 	return &newitem, nil
+}
+
+func (*itemtable) FindOneItem(ID int64) (*models.Item, error) {
+	var item models.Item
+
+	conn, err := DB.InitializeDbConnection()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error connecting to db: %v\n", err)
+
+		return nil, err
+	}
+	defer conn.Close()
+	defer fmt.Printf("Db connection closed")
+
+	const query = `
+		SELECT * FROM items 
+		WHERE id=$1
+		LIMIT $2
+	`
+	limit := 1
+
+	row := conn.QueryRow(query, ID, limit)
+
+	err = row.Scan(
+		&item.ID,
+		&item.Item,
+		&item.Price,
+		&item.CreatedAt,
+	)
+	switch err {
+	case sql.ErrNoRows:
+		fmt.Printf("No rows were returned")
+		return nil, nil
+	case nil:
+		return &item, nil
+	default:
+		fmt.Fprintf(os.Stderr, "Unable to scan item rows: %v\n", err)
+	}
+	return &item, err
 }

@@ -28,8 +28,8 @@ func (*itemcontroller) GetItems(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateItem creates a new item
-// @Summary Get profile creates a new item
-// @Description Get profile creates a new item
+// @Summary creates a new item
+// @Description creates a new item
 // @Tags  Items
 // @Accept  json
 // @Produce  json
@@ -71,7 +71,7 @@ func (*itemcontroller) CreateItem(w http.ResponseWriter, r *http.Request) {
 // @Param id path int64 true "Item Id"
 // @Success 200
 // @Router /auth/delete/item/{id} [delete]
-func DeleteItem(w http.ResponseWriter, r *http.Request) {
+func (*itemcontroller) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	strID := params["id"]
 

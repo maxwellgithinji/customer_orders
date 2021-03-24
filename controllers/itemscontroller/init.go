@@ -10,7 +10,7 @@ import (
 type ItemController interface {
 	GetItems(w http.ResponseWriter, r *http.Request)
 	CreateItem(w http.ResponseWriter, r *http.Request)
-	// DeleteItem(w http.ResponseWriter, r *http.Request)
+	DeleteItem(w http.ResponseWriter, r *http.Request)
 }
 
 type itemcontroller struct{}

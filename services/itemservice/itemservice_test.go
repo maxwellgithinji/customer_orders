@@ -1,7 +1,6 @@
 package itemservice
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -29,6 +28,12 @@ func (mock *MockDatabase) DeleteItem(ID int64) (int64, error) {
 	args := mock.Called()
 	res := args.Get(0)
 	return res.(int64), args.Error(1)
+}
+
+func (mock *MockDatabase) FindOneItem(ID int64) (*models.Item, error) {
+	args := mock.Called()
+	res := args.Get(0)
+	return res.(*models.Item), args.Error(1)
 }
 
 func TestValidateEmptyItem(t *testing.T) {
@@ -116,9 +121,29 @@ func TestDeleteAnItem(t *testing.T) {
 	mockDb.On("DeleteItem").Return(ret, nil)
 
 	res2, err := testService.DeleteItem(item.ID)
-	fmt.Println(res2, ">>>>>")
 	// Mock Assertion : Behavioral
 
 	assert.Equal(t, int64(1), res2)
+	assert.Nil(t, err)
+}
+
+func TestFindOneItem(t *testing.T) {
+	mockDb := new(MockDatabase)
+	item := models.Item{ID: 1, Item: "item 2", Price: 100, CreatedAt: time.Now().Local()}
+
+	// Setup expectations
+	mockDb.On("FindOneItem").Return(&item, nil)
+
+	testService := NewItemService(mockDb)
+	res, err := testService.FindOneItem(item.ID)
+
+	// Mock Assertion : Behavioral
+	mockDb.AssertExpectations(t)
+
+	// Data Assertion
+	assert.NotNil(t, res.ID)
+	assert.Equal(t, int64(1), res.ID)
+	assert.Equal(t, "item 2", res.Item)
+	assert.Equal(t, int64(100), res.Price)
 	assert.Nil(t, err)
 }
