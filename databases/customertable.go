@@ -14,6 +14,7 @@ type CustomerTable interface {
 	FindAllCustomers() ([]models.Customer, error)
 	FindOneCustomer(ID int64) (*models.Customer, error)
 	FindCustomerByEmail(Email string) (models.Customer, error)
+	OnboardCustomer(email string, customer models.Customer) (*models.Customer, error)
 }
 
 type customertable struct{}
@@ -71,8 +72,47 @@ func (*customertable) FindAllCustomers() ([]models.Customer, error) {
 	}
 	return customers, nil
 }
+
 func (*customertable) FindOneCustomer(ID int64) (*models.Customer, error) {
-	return nil, nil
+	var customer models.Customer
+
+	conn, err := DB.InitializeDbConnection()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error connecting to db: %v\n", err)
+
+		return nil, err
+	}
+	defer conn.Close()
+	defer fmt.Printf("Db connection closed")
+
+	const query = `
+		SELECT * FROM customers 
+		WHERE id=$1
+		LIMIT $2
+	`
+	limit := 1
+
+	row := conn.QueryRow(query, ID, limit)
+
+	err = row.Scan(
+		&customer.ID,
+		&customer.Username,
+		&customer.Email,
+		&customer.PhoneNumber,
+		&customer.Code,
+		&customer.Status,
+		&customer.CreatedAt,
+	)
+	switch err {
+	case sql.ErrNoRows:
+		fmt.Printf("No rows were returned")
+		return nil, nil
+	case nil:
+		return &customer, nil
+	default:
+		fmt.Fprintf(os.Stderr, "Unable to scan customer rows: %v\n", err)
+	}
+	return &customer, err
 }
 
 func (*customertable) SaveCustomer(customer models.Customer) (*models.Customer, error) {
@@ -163,4 +203,44 @@ func (*customertable) FindCustomerByEmail(Email string) (models.Customer, error)
 		fmt.Fprintf(os.Stderr, "Unable to scan customer rows: %v\n", err)
 	}
 	return customer, err
+}
+
+func (*customertable) OnboardCustomer(email string, customer models.Customer) (*models.Customer, error) {
+	conn, err := DB.InitializeDbConnection()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error connecting to db: %v\n", err)
+		return nil, err
+	}
+	defer conn.Close()
+	defer fmt.Printf("Db connection closed")
+
+	const query = `
+		UPDATE customers 
+		SET 
+			username=$2,
+			phone_number=$3,
+			status=$4,
+			code=$5
+		WHERE
+			email=$1;
+	`
+	res, err := conn.Exec(
+		query,
+		email,
+		customer.Username,
+		customer.PhoneNumber,
+		customer.Status,
+		customer.Code,
+	)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error executing update customer: %v\n", err)
+		return nil, err
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error checking customer update rows affected: %v\n", err)
+		return nil, err
+	}
+	fmt.Println("Rows affected:", rowsAffected)
+	return &customer, nil
 }

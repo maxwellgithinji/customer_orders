@@ -55,5 +55,6 @@ func apiV1(api *mux.Router) {
 	// Customers
 	a.HandleFunc("/profile", customerController.Profile).Methods("GET")
 	a.HandleFunc("/customers", customerController.GetCustomers).Methods("GET")
+	a.HandleFunc("/onboard/", customerController.OnboardCustomer).Methods("PATCH")
 
 }

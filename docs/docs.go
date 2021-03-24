@@ -55,6 +55,40 @@ var doc = `{
                 }
             }
         },
+        "/auth/onboard": {
+            "patch": {
+                "description": "Get profile enables a logged in user to update their profile details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Get profile enables a logged in user to update their profile details",
+                "parameters": [
+                    {
+                        "description": "Onboard User",
+                        "name": "customer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Onboarding"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Onboarding"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/profile": {
             "get": {
                 "description": "Get profile gets profile of currently logged in user",
@@ -120,13 +154,22 @@ var doc = `{
                 "code": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "name": {
+                "phone_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -135,6 +178,17 @@ var doc = `{
             "type": "object",
             "properties": {
                 "redirect": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Onboarding": {
+            "type": "object",
+            "properties": {
+                "phone_number": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

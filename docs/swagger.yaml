@@ -4,16 +4,29 @@ definitions:
     properties:
       code:
         type: string
+      created_at:
+        type: string
       email:
         type: string
       id:
         type: integer
-      name:
+      phone_number:
+        type: string
+      status:
+        type: string
+      username:
         type: string
     type: object
   models.Login:
     properties:
       redirect:
+        type: string
+    type: object
+  models.Onboarding:
+    properties:
+      phone_number:
+        type: string
+      username:
         type: string
     type: object
 info:
@@ -41,6 +54,28 @@ paths:
               $ref: '#/definitions/models.Customer'
             type: array
       summary: Get all customers in the database
+      tags:
+      - Customers
+  /auth/onboard:
+    patch:
+      consumes:
+      - application/json
+      description: Get profile enables a logged in user to update their profile details
+      parameters:
+      - description: Onboard User
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/models.Onboarding'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Onboarding'
+      summary: Get profile enables a logged in user to update their profile details
       tags:
       - Customers
   /auth/profile:
