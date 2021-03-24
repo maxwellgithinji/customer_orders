@@ -63,7 +63,7 @@ A simple go REST service to show implementation of PostgreSQL, CI/CD, Open ID Co
 - go to `GET /auth/currentuser/orders` to view orders of currently logged in user
 - go to `GET /auth/orders` to get all orders ever made (Pagination and admin o=implementation required in future)
 
-## Log Out
+### Log Out
 
 - go to `POST /logout` to log out of the application
 - all routes with `*/auth/*` should give an error 401 when you try accessing them when you are not logged in
