@@ -1,8 +1,11 @@
 package authcontroller
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/maxwellgithinji/customer_orders/models"
 )
 
 func (*authcontroller) Callback(w http.ResponseWriter, r *http.Request) {
@@ -48,6 +51,7 @@ func (*authcontroller) Callback(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to verify ID Token: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	// Getting now the userInfo
 	var profile map[string]interface{}
 	if err := idToken.Claims(&profile); err != nil {
@@ -67,7 +71,38 @@ func (*authcontroller) Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// userprofile := session.Values["profile"]
+	email := fmt.Sprintf("%v", profile["email"])
+	name := fmt.Sprintf("%v", profile["name"])
+	status := "inactive"
+
+	var customer models.Customer
+	var defaultcustomerstate models.Customer
+	var emailexists models.Customer
+
+	customer.Username = name
+	customer.Email = email
+	customer.Status = status
+
+	// Check if a user with current email exist before saving
+	emailexists, err = customerService.FindACustomerByEmail(email)
+	// TODO: debug pointers implementation to in order to check for nil instead of the code below
+	if emailexists == defaultcustomerstate {
+		if err == nil {
+			// Save as new user
+			_, err = customerService.CreateCustomer(customer)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	// Redirect to profile route after successful login
-	http.Redirect(w, r, "/api/v1/auth/profile", http.StatusSeeOther)
+	defer http.Redirect(w, r, "/api/v1/auth/profile", http.StatusSeeOther)
 
 }

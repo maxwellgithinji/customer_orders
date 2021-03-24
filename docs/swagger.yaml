@@ -80,9 +80,4 @@ paths:
       summary: Gets the redirect url for openID connect logout
       tags:
       - Auth
-securityDefinitions:
-  OAuth2Implicit:
-    authorizationUrl: http://localhost:8080/api/v1/login
-    flow: implicit
-    type: oauth2
 swagger: "2.0"

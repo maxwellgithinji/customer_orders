@@ -1,4 +1,4 @@
-package service
+package customerservice
 
 import (
 	"errors"
@@ -9,16 +9,16 @@ import (
 
 type CustomerService interface {
 	ValidateCustomer(Customer *models.Customer) error
-	CreateCustomer(Customer *models.Customer) (*models.Customer, error)
+	CreateCustomer(Customer models.Customer) (*models.Customer, error)
 	FindAllCustomers() ([]models.Customer, error)
 	FindOneCustomer(ID int64) (*models.Customer, error)
-	FindACustomerByEmail(Email string) (*models.Customer, error)
+	FindACustomerByEmail(Email string) (models.Customer, error)
 }
 
 type customerservice struct{}
 
 var (
-	CustomerTable databases.CustomerTable
+	CustomerTable databases.CustomerTable = databases.NewCustomersTable(databases.DB)
 )
 
 func NewCustomerService(ct databases.CustomerTable) CustomerService {
@@ -28,17 +28,17 @@ func NewCustomerService(ct databases.CustomerTable) CustomerService {
 
 func (*customerservice) ValidateCustomer(Customer *models.Customer) error {
 	if Customer == nil {
-		err := errors.New("Customers are empty")
+		err := errors.New("customers are empty")
 		return err
 	}
 	if Customer.Email == "" {
-		err := errors.New("Customers email is empty")
+		err := errors.New("customers email is empty")
 		return err
 	}
 	// TODO: Validate email
 	return nil
 }
-func (*customerservice) CreateCustomer(Customer *models.Customer) (*models.Customer, error) {
+func (*customerservice) CreateCustomer(Customer models.Customer) (*models.Customer, error) {
 	return CustomerTable.SaveCustomer(Customer)
 }
 func (*customerservice) FindAllCustomers() ([]models.Customer, error) {
@@ -49,6 +49,6 @@ func (*customerservice) FindOneCustomer(ID int64) (*models.Customer, error) {
 	return CustomerTable.FindOneCustomer(ID)
 }
 
-func (*customerservice) FindACustomerByEmail(Email string) (*models.Customer, error) {
+func (*customerservice) FindACustomerByEmail(Email string) (models.Customer, error) {
 	return CustomerTable.FindCustomerByEmail(Email)
 }

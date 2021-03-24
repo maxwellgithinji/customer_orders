@@ -3,7 +3,9 @@ package authcontroller
 import (
 	"net/http"
 
-	service "github.com/maxwellgithinji/customer_orders/services"
+	"github.com/maxwellgithinji/customer_orders/databases"
+	"github.com/maxwellgithinji/customer_orders/services/customerservice"
+	"github.com/maxwellgithinji/customer_orders/services/openidauthservice"
 )
 
 type OpenIDAuthController interface {
@@ -14,10 +16,13 @@ type OpenIDAuthController interface {
 type authcontroller struct{}
 
 var (
-	openIDAuthService service.OpenIdAuthService
+	openIDAuthService openidauthservice.OpenIdAuthService = openidauthservice.NewOpenIdAuthService()
+	customerTable     databases.CustomerTable             = databases.NewCustomersTable(databases.DB)
+	customerService   customerservice.CustomerService     = customerservice.NewCustomerService(customerTable)
 )
 
-func NewOpenIdAuthController(service service.OpenIdAuthService) OpenIDAuthController {
+func NewOpenIdAuthController(service openidauthservice.OpenIdAuthService, customer customerservice.CustomerService) OpenIDAuthController {
 	openIDAuthService = service
+	customerService = customer
 	return &authcontroller{}
 }

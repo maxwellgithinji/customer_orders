@@ -19,6 +19,7 @@ func (*customercontroller) GetCustomers(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		utils.ResponseHelper(w, "500", err.Error())
+		return
 	}
 	utils.ResponseWithDataHelper(w, "200", "customers fetch successful", customers)
 }
@@ -41,11 +42,12 @@ func (*customercontroller) Profile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	customer := session.Values["profile"]
-	fmt.Printf("%v", session.Values["profile"])
-	// var customer = models.Customer{}
-	// fmt.Printf("%v", session.Values["profile"])
-	// TODO: Combine customer details and profile details to build the customer response
+	profile := session.Values["profile"]
+	email := fmt.Sprintf("%v", profile.(map[string]interface{})["email"])
+	customer, err := customerService.FindACustomerByEmail(email)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	utils.ResponseWithDataHelper(w, "200", "customer fetch successful", customer)
-	// customer, err := customerService.FindCustomerByEmail()
 }

@@ -7,20 +7,25 @@ import (
 	"github.com/maxwellgithinji/customer_orders/controllers/itemscontroller"
 	"github.com/maxwellgithinji/customer_orders/databases"
 	"github.com/maxwellgithinji/customer_orders/middlewares"
-	service "github.com/maxwellgithinji/customer_orders/services"
+	"github.com/maxwellgithinji/customer_orders/services/customerservice"
+	"github.com/maxwellgithinji/customer_orders/services/openidauthservice"
 )
 
 var (
 
-	// Auth
-	openIDAuthService    service.OpenIdAuthService           = service.NewOpenIdAuthService()
-	openIDAuthController authcontroller.OpenIDAuthController = authcontroller.NewOpenIdAuthController(openIDAuthService)
+	// Database
+	database databases.Database = databases.NewDatabase()
 
 	// Middlewares
 	authmiddleware middlewares.AuthMiddleware = middlewares.NewAuthMiddleware(openIDAuthService)
+
+	// Auth
+	openIDAuthService    openidauthservice.OpenIdAuthService = openidauthservice.NewOpenIdAuthService()
+	openIDAuthController authcontroller.OpenIDAuthController = authcontroller.NewOpenIdAuthController(openIDAuthService, customerService)
+
 	// Customer
-	customerTable      databases.CustomerTable                = databases.NewCustomersTable()
-	customerService    service.CustomerService                = service.NewCustomerService(customerTable)
+	customerTable      databases.CustomerTable                = databases.NewCustomersTable(database)
+	customerService    customerservice.CustomerService        = customerservice.NewCustomerService(customerTable)
 	customerController customerscontroller.CustomerController = customerscontroller.NewCustomerController(customerService, openIDAuthService)
 )
 
