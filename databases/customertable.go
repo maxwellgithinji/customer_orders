@@ -61,6 +61,7 @@ func (*customertable) FindAllCustomers() ([]models.Customer, error) {
 			&customer.PhoneNumber,
 			&customer.Code,
 			&customer.Status,
+			&customer.CreatedAt,
 		)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error scanning customer rows: %v\n", err)

@@ -2,9 +2,9 @@ name: ci-test
 
 on:
   push:
-    branches: [develop, master, ch-cicd-psql-deploy-177432339]
+    branches: [develop, main]
   pull_request:
-    branches: [develop, master]
+    branches: [develop, main]
 
 jobs:
   test:
