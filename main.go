@@ -28,14 +28,16 @@ var (
 //
 // @BasePath /api/v1
 func main() {
-	// Initialize dotenv
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
 
+	if os.Getenv("APP_ENV") != "production" {
+		// Initialize dotenv
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+	}
 	// Initialize db connection
-	_, err = database.InitializeDbConnection()
+	_, err := database.InitializeDbConnection()
 	if err != nil {
 		log.Fatal("Error connecting to db", err)
 	}
