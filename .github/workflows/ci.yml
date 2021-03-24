@@ -54,6 +54,10 @@ jobs:
           node-version: '14'
       - run: npm install
       - run: npm install -g codeclimate-test-reporter
+      - run: make testcover
         env:
           CC_TEST_REPORTER_ID: 521b528b1f9ee802f966d62a3cb5cf7a5bfbb3366b0cadfd2b6aaa1052bbd021
-      - run: make testcover
+          CODECLIMATE_API_HOST : https://codebeat.co/webhooks/code_coverage \
+          CODECLIMATE_REPO_TOKEN : 521b528b1f9ee802f966d62a3cb5cf7a5bfbb3366b0cadfd2b6aaa1052bbd021
+      - run: codeclimate-test-reporter < coverage/lcov/lcov.info
+  
