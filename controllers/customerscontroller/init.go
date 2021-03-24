@@ -11,6 +11,7 @@ import (
 type CustomerController interface {
 	GetCustomers(w http.ResponseWriter, r *http.Request)
 	Profile(w http.ResponseWriter, r *http.Request)
+	OnboardCustomer(w http.ResponseWriter, r *http.Request)
 }
 
 type customercontroller struct{}

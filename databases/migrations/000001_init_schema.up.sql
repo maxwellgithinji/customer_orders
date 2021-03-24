@@ -3,7 +3,7 @@ CREATE TABLE "customers" (
   "id" bigserial PRIMARY KEY,
   "username" varchar NOT NULL,
   "email" varchar UNIQUE NOT NULL,
-  "phone_number" varchar,
+  "phone_number" varchar UNIQUE,
   "code" varchar,
   "status" varchar NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
@@ -13,7 +13,7 @@ COMMIT;
 BEGIN;
 CREATE TABLE "items" (
   "id" bigserial PRIMARY KEY,
-  "item" varchar NOT NULL,
+  "item" varchar NOT NULL UNIQUE,
   "price" bigint NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );

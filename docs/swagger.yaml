@@ -4,17 +4,68 @@ definitions:
     properties:
       code:
         type: string
+      created_at:
+        type: string
       email:
         type: string
       id:
         type: integer
-      name:
+      phone_number:
         type: string
+      status:
+        type: string
+      username:
+        type: string
+    type: object
+  models.Item:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      item:
+        type: string
+      price:
+        type: integer
+    type: object
+  models.ItemPost:
+    properties:
+      item:
+        type: string
+      price:
+        type: integer
     type: object
   models.Login:
     properties:
       redirect:
         type: string
+    type: object
+  models.Onboarding:
+    properties:
+      phone_number:
+        type: string
+      username:
+        type: string
+    type: object
+  models.Order:
+    properties:
+      created_at:
+        type: string
+      customer_id:
+        type: integer
+      id:
+        type: integer
+      item_id:
+        type: integer
+      order_date:
+        type: string
+      total_price:
+        type: number
+    type: object
+  models.OrderPost:
+    properties:
+      item_id:
+        type: integer
     type: object
 info:
   contact:
@@ -28,6 +79,23 @@ info:
   title: Client Orders
   version: 1.0.0
 paths:
+  /auth/currentuser/orders:
+    get:
+      consumes:
+      - application/json
+      description: gets orders of currently logged in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Order'
+            type: array
+      summary: enables the current user to get their orders
+      tags:
+      - Orders
   /auth/customers:
     get:
       description: Get all customers in the database
@@ -43,6 +111,105 @@ paths:
       summary: Get all customers in the database
       tags:
       - Customers
+  /auth/delete/item/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: deletes an item
+      parameters:
+      - description: Item Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: enables a user to delete an item
+      tags:
+      - Items
+  /auth/item:
+    post:
+      consumes:
+      - application/json
+      description: creates a new item
+      parameters:
+      - description: Item
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.ItemPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemPost'
+      summary: creates a new item
+      tags:
+      - Items
+  /auth/onboard:
+    patch:
+      consumes:
+      - application/json
+      description: Get profile enables a logged in user to update their profile details
+      parameters:
+      - description: Onboard User
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/models.Onboarding'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Onboarding'
+      summary: Get profile enables a logged in user to update their profile details
+      tags:
+      - Customers
+  /auth/orders:
+    get:
+      description: Get all orders in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Order'
+            type: array
+      summary: Get all orders in the database
+      tags:
+      - Orders
+    post:
+      consumes:
+      - application/json
+      description: creates a new order
+      parameters:
+      - description: Order
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/models.OrderPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OrderPost'
+      summary: creates a new order
+      tags:
+      - Orders
   /auth/profile:
     get:
       description: Get profile gets profile of currently logged in user
@@ -56,6 +223,21 @@ paths:
       summary: Get profile gets profile of currently logged in user
       tags:
       - Customers
+  /items:
+    get:
+      description: Get all items in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Item'
+            type: array
+      summary: Get all items in the database
+      tags:
+      - Items
   /login:
     get:
       description: redirects a user to authorize with OpenID connect

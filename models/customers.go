@@ -12,3 +12,9 @@ type Customer = struct {
 	Status      string    `json:"status"`
 	CreatedAt   time.Time `json:"created_at"`
 }
+
+// Onboarding is a model struct that contains onboarding customer details
+type Onboarding = struct {
+	Username    string `json:"username"`
+	PhoneNumber string `json:"phone_number"`
+}

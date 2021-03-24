@@ -32,6 +32,32 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/currentuser/orders": {
+            "get": {
+                "description": "gets orders of currently logged in user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "enables the current user to get their orders",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Order"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/auth/customers": {
             "get": {
                 "description": "Get all customers in the database",
@@ -55,6 +81,158 @@ var doc = `{
                 }
             }
         },
+        "/auth/delete/item/{id}": {
+            "delete": {
+                "description": "deletes an item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "enables a user to delete an item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/auth/item": {
+            "post": {
+                "description": "creates a new item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "creates a new item",
+                "parameters": [
+                    {
+                        "description": "Item",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemPost"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemPost"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/onboard": {
+            "patch": {
+                "description": "Get profile enables a logged in user to update their profile details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Get profile enables a logged in user to update their profile details",
+                "parameters": [
+                    {
+                        "description": "Onboard User",
+                        "name": "customer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Onboarding"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Onboarding"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/orders": {
+            "get": {
+                "description": "Get all orders in the database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get all orders in the database",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Order"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "creates a new order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "creates a new order",
+                "parameters": [
+                    {
+                        "description": "Order",
+                        "name": "order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.OrderPost"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.OrderPost"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/profile": {
             "get": {
                 "description": "Get profile gets profile of currently logged in user",
@@ -70,6 +248,29 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Customer"
+                        }
+                    }
+                }
+            }
+        },
+        "/items": {
+            "get": {
+                "description": "Get all items in the database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get all items in the database",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Item"
+                            }
                         }
                     }
                 }
@@ -120,14 +321,51 @@ var doc = `{
                 "code": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "name": {
+                "phone_number": {
                     "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Item": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "item": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ItemPost": {
+            "type": "object",
+            "properties": {
+                "item": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
                 }
             }
         },
@@ -136,6 +374,48 @@ var doc = `{
             "properties": {
                 "redirect": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Onboarding": {
+            "type": "object",
+            "properties": {
+                "phone_number": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Order": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "item_id": {
+                    "type": "integer"
+                },
+                "order_date": {
+                    "type": "string"
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.OrderPost": {
+            "type": "object",
+            "properties": {
+                "item_id": {
+                    "type": "integer"
                 }
             }
         }
