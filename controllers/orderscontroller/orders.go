@@ -130,7 +130,7 @@ func (*ordercontroller) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	messsage := "Hi " + customer.Username + "\n Your order for " + item.Item + " was completed successfully \n Please pick your item within the next 5 working days"
+	messsage := "Hi " + customer.Username + "\n Your order for '" + item.Item + "' was completed successfully \n Please pick your item within the next 5 working days"
 
 	// Use wait groups to wait for the sms sending to finish
 	var wg sync.WaitGroup

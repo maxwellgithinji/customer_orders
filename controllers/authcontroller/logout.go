@@ -18,12 +18,14 @@ import (
 func (*authcontroller) Logout(w http.ResponseWriter, r *http.Request) {
 	err := openIDAuthService.InitSession()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 	session, err := openIDAuthService.NewStore().Get(r, "auth-session")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 	clientID := os.Getenv("CLIENT_ID")
@@ -60,6 +62,11 @@ func (*authcontroller) Logout(w http.ResponseWriter, r *http.Request) {
 	// Expire the session and save
 	session.Options.MaxAge = -1
 	err = session.Save(r, w)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
+		return
+	}
 
 	_, err = http.Get(logoutUrl.String())
 	if err != nil {

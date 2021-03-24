@@ -52,7 +52,8 @@ func (*customercontroller) Profile(w http.ResponseWriter, r *http.Request) {
 
 	customer, err := customerService.FindACustomerByEmail(email)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
 	utils.ResponseWithDataHelper(w, "200", "customer fetch successful", customer)
