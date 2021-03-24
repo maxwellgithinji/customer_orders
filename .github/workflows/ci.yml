@@ -14,7 +14,6 @@ jobs:
       postgres:
         image: postgres:12
         env:
-          DATABASE_URL: postgresql://root:secret@localhost:5432/customer_service_test?sslmode=disable
           POSTGRES_USER: root
           POSTGRES_PASSWORD: secret
           POSTGRES_DB: customer_service_test
@@ -41,7 +40,9 @@ jobs:
           curl -L https://github.com/golang-migrate/migrate/releases/download/v4.12.2/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate.linux-amd64 /usr/bin/migrate
           which migrate
-
+      - name: set database url env variable
+        env: 
+          DATABASE_URL: postgresql://root:secret@localhost:5432/customer_service_test?sslmode=disable
       - name: Run migrations
         run: make migrateup
 
