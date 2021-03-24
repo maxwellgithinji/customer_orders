@@ -41,6 +41,7 @@ jobs:
           sudo mv migrate.linux-amd64 /usr/bin/migrate
           which migrate
       - name: set database url env variable
+        run: echo "DBURL =>> ${DATABASE_URL}"
         env:
           DATABASE_URL: "postgresql://root:secret@localhost:5432/customer_service_test?sslmode=disable"
       - name: Run migrations
