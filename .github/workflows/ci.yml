@@ -6,8 +6,11 @@ on:
   pull_request:
     branches: [ develop, master ]
 
-jobs:
+env:
+  global:
+  - DATABASE_URL=postgresql://root:secret@localhost:5432/customer_service_test?sslmode=disable
 
+jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
