@@ -67,7 +67,7 @@ func (*ordercontroller) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	session, err := OpenIDAuthService.NewStore().Get(r, "auth-session")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		utils.ResponseHelper(w, "500", err.Error())
+		utils.ResponseHelper(w, "500", err.Error()+",  delete the session cookie")
 		return
 	}
 
@@ -81,7 +81,6 @@ func (*ordercontroller) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
-
 	if customer == defaultcustomerstate {
 		if err == nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -175,18 +174,26 @@ func (*ordercontroller) FindCurrentUserOrders(w http.ResponseWriter, r *http.Req
 	session, err := OpenIDAuthService.NewStore().Get(r, "auth-session")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		utils.ResponseHelper(w, "500", err.Error())
+		utils.ResponseHelper(w, "500", err.Error()+",  delete the session cookie")
 		return
 	}
 
 	profile := session.Values["profile"]
 	email := fmt.Sprintf("%v", profile.(map[string]interface{})["email"])
+	defaultcustomerstate := models.Customer{}
 
 	customer, err := CustomerService.FindACustomerByEmail(email)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		utils.ResponseHelper(w, "400", "User with email "+email+" does not exist in db")
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
 		return
+	}
+	if customer == defaultcustomerstate {
+		if err == nil {
+			w.WriteHeader(http.StatusBadRequest)
+			utils.ResponseHelper(w, "400", "Customer with email "+email+" does not exist in db")
+			return
+		}
 	}
 
 	orders, err := OrderService.FindOrderByCustomerId(customer.ID)

@@ -1,4 +1,4 @@
-package authcontroller
+package itemscontroller
 
 import (
 	"net/http"
@@ -6,11 +6,11 @@ import (
 	"testing"
 )
 
-func TestLogoutWithoutSession(t *testing.T) {
-	req, _ := http.NewRequest("GET", "/login", nil)
+func TestGetItemsUnauthenticatedDB(t *testing.T) {
+	req, _ := http.NewRequest("GET", "/items", nil)
 	rr := httptest.NewRecorder()
 
-	handler := http.HandlerFunc(openIDAuthControllerTest.Logout)
+	handler := http.HandlerFunc(ItemControllerTest.GetItems)
 	handler.ServeHTTP(rr, req)
 
 	status := rr.Result().StatusCode

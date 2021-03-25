@@ -27,7 +27,7 @@ func (*authcontroller) Callback(w http.ResponseWriter, r *http.Request) {
 	session, err := openIDAuthService.NewStore().Get(r, "auth-session")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		utils.ResponseHelper(w, "500", err.Error())
+		utils.ResponseHelper(w, "500", err.Error()+",  delete the session cookie")
 		return
 	}
 
