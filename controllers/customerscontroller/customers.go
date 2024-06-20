@@ -43,18 +43,27 @@ func (*customercontroller) Profile(w http.ResponseWriter, r *http.Request) {
 	session, err := openIDAuthService.NewStore().Get(r, "auth-session")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		utils.ResponseHelper(w, "500", err.Error())
+		utils.ResponseHelper(w, "500", err.Error()+",  delete the session cookie")
 		return
 	}
 
 	profile := session.Values["profile"]
 	email := fmt.Sprintf("%v", profile.(map[string]interface{})["email"])
 
+	defaultcustomerstate := models.Customer{}
+
 	customer, err := customerService.FindACustomerByEmail(email)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		utils.ResponseHelper(w, "500", err.Error())
 		return
+	}
+	if customer == defaultcustomerstate {
+		if err == nil {
+			w.WriteHeader(http.StatusBadRequest)
+			utils.ResponseHelper(w, "400", "Customer with email "+email+" does not exist in db")
+			return
+		}
 	}
 	utils.ResponseWithDataHelper(w, "200", "customer fetch successful", customer)
 }
@@ -87,11 +96,26 @@ func (*customercontroller) OnboardCustomer(w http.ResponseWriter, r *http.Reques
 	session, err := openIDAuthService.NewStore().Get(r, "auth-session")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		utils.ResponseHelper(w, "500", err.Error())
+		utils.ResponseHelper(w, "500", err.Error()+",  delete the session cookie")
 		return
 	}
 	profile := session.Values["profile"]
 	email := fmt.Sprintf("%v", profile.(map[string]interface{})["email"])
+	defaultcustomerstate := models.Customer{}
+
+	customer, err := customerService.FindACustomerByEmail(email)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.ResponseHelper(w, "500", err.Error())
+		return
+	}
+	if customer == defaultcustomerstate {
+		if err == nil {
+			w.WriteHeader(http.StatusBadRequest)
+			utils.ResponseHelper(w, "400", "Customer with email "+email+" does not exist in db")
+			return
+		}
+	}
 
 	customerbody.Status = "active"
 	customerbody.Code = "123"
@@ -112,11 +136,11 @@ func (*customercontroller) OnboardCustomer(w http.ResponseWriter, r *http.Reques
 	// 	return
 	// }
 
-	customer, err := customerService.OnboardCustomer(email, customerbody)
+	onboardedcustomer, err := customerService.OnboardCustomer(email, customerbody)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		utils.ResponseHelper(w, "500", err.Error())
 		return
 	}
-	utils.ResponseWithDataHelper(w, "200", "customer details updated successfully", customer)
+	utils.ResponseWithDataHelper(w, "200", "customer details updated successfully", onboardedcustomer)
 }
